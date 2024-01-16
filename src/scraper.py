@@ -11,6 +11,7 @@ from typing import Set
 import time
 import csv 
 
+
 class PDFScraper:
     """
     A class to scrape PDF URLs from webpages.

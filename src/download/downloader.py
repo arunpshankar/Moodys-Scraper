@@ -6,7 +6,7 @@ import time
 import csv
 
 
-def download_file(url, destination, max_retries=3, timeout_duration=1):
+def download_file(url, destination, max_retries=5, timeout_duration=10):
     """
     Synchronously downloads a file from a given URL and saves it to the specified destination. 
     Implements retry logic with quick retries for certain connection errors.

@@ -56,7 +56,7 @@ class PDFScraper:
             html_content = driver.page_source
             soup = BeautifulSoup(html_content, 'html.parser')
             a_tags = soup.find_all('a', href=True)
-            urls = [tag['href'] for tag in a_tags]
+            urls = [tag['href'] for tag in a_tags] 
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             urls = []
@@ -78,6 +78,10 @@ class PDFScraper:
         non_pdf_urls = set()
         urls = self._scrape_urls_from_page(base_url)
         root_domain = extract_root_domain(base_url)
+
+        for url in urls:
+            if 'api' in url:
+                print('>>>', url)
 
         for url in urls:
             if url.endswith(".pdf") and not "inline" in url:
@@ -221,7 +225,7 @@ def scrape_to_file(input_file_path: str, webdriver_path: str, output_file_path: 
 
 if __name__ == '__main__':
     scrape_to_file(
-        input_file_path='./src/scrape/input_urls_1000.csv',
-        webdriver_path='./src/scrape/chromedriver',
-        output_file_path='./src/scrape/pdf_urls_1000.csv'
+        input_file_path='./data/input/seed.csv',
+        webdriver_path='./config/chromedriver',
+        output_file_path='./data/output/pdf_urls.csv'
     )

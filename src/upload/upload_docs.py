@@ -2,18 +2,19 @@ from google.oauth2.service_account import Credentials as ServiceAccountCredentia
 from src.config.logging import logger
 from src.config.setup import config
 from google.cloud import storage
+from typing import Optional
 from pathlib import Path
 from typing import Union
 import jsonlines
 import json
 
 
-def initialize_gcs_client() -> storage.Client:
+def initialize_gcs_client() -> Optional[storage.Client]:
     """
-    Initialize the Google Cloud Storage client using provided service account credentials.
+    Initialize the Google Cloud Storage (GCS) client using service account credentials specified in the configuration.
 
     Returns:
-        google.cloud.storage.client.Client: Initialized GCS client.
+        Optional[google.cloud.storage.client.Client]: An initialized GCS client if successful, None otherwise.
     """
     try:
         credentials = ServiceAccountCredentials.from_service_account_file(config.CREDENTIALS_PATH)
@@ -22,14 +23,17 @@ def initialize_gcs_client() -> storage.Client:
         logger.error(f"Failed to initialize GCS client: {e}")
 
 
-def upload_to_gcs(client: storage.Client, source_file: Union[str, Path], destination_blob_name: str, writer, id_: str, company_name: str) -> None:
+def upload_to_gcs(client: storage.Client, source_file: Union[str, Path], destination_blob_name: str, writer: jsonlines.Writer, id_: str, company_name: str) -> None:
     """
-    Uploads a file to the specified GCS bucket.
+    Uploads a file to the specified GCS bucket and writes metadata to a JSON lines file.
 
     Args:
         client (google.cloud.storage.client.Client): Initialized GCS client.
-        source_file (Union[str, Path]): Path to the file to be uploaded.
-        destination_blob_name (str): Desired blob name in the GCS bucket.
+        source_file (Union[str, Path]): The file path of the source file to be uploaded.
+        destination_blob_name (str): The name for the file in the GCS bucket.
+        writer (jsonlines.Writer): A writer for JSON lines file to record metadata.
+        id_ (str): A unique identifier for the file.
+        company_name (str): The name of the company associated with the file.
     """
     try:
         bucket = client.get_bucket(config.DOC_SEARCH_BUCKET)
@@ -44,18 +48,15 @@ def upload_to_gcs(client: storage.Client, source_file: Union[str, Path], destina
         logger.error(f"Failed to upload {source_file} to GCS: {e}")
 
 
-def extract_company_name(file_path: Path) -> str:
+def extract_company_name(file_path: Path) -> Optional[str]:
     """
-    Extracts the company name from a given file path, specifically a Path object.
-
-    The function assumes that the file path contains a segment 'pdf_files/',
-    and the company name is the directory immediately following this segment.
+    Extracts the company name from a given file path, assuming a specific directory structure.
 
     Parameters:
-    file_path (Path): The file path (as a Path object) from which to extract the company name.
+    file_path (Path): The file path from which to extract the company name.
 
     Returns:
-    str: The extracted company name.
+    Optional[str]: The extracted company name if successful, None otherwise.
     """
     try:
         parts = list(file_path.parts)
@@ -65,15 +66,16 @@ def extract_company_name(file_path: Path) -> str:
         logger.error(e)
 
 
-def upload(pdf_folder: Union[str, Path]) -> None:
+def upload(pdf_folder: Union[str, Path], metadata_file_path: str) -> None:
     """
-    Main function to iterate over PDFs in subdirectories and upload them to GCS.
+    Iterates over PDF files in the specified folder (including subdirectories) and uploads them to GCS.
+    Also creates and updates a metadata file in JSON Lines format.
 
     Args:
-        pdf_folder (Union[str, Path]): Path to the folder containing subdirectories with PDFs.
+        pdf_folder (Union[str, Path]): The path to the folder containing subdirectories with PDF files.
+        metadata_file_path (str): The file path where the metadata in JSON Lines format will be saved.
     """
     client = initialize_gcs_client()
-    metadata_file_path = './src/scrape/pdf_files/metadata.jsonl'
     writer = jsonlines.open(metadata_file_path, mode='w')
 
     # Use rglob to find PDFs in subdirectories
@@ -88,19 +90,16 @@ def upload(pdf_folder: Union[str, Path]) -> None:
     writer.close()
 
 
-def upload_json() -> None:
+def upload_json(metadata_file_path: str) -> None:
     """
-    Uploads a JSON file to the specified GCS bucket.
+    Uploads a JSON Lines file to the specified GCS bucket.
 
     Args:
-        client (google.cloud.storage.client.Client): Initialized GCS client.
-        json_file_path (str): Path to the JSON file to be uploaded.
-        destination_blob_name (str): Desired blob name in the GCS bucket.
+        metadata_file_path (str): The file path of the JSON Lines file to be uploaded.
     """
     try:
         # Assuming the bucket name is stored in a config variable
         client = initialize_gcs_client()
-        metadata_file_path = './src/scrape/pdf_files/metadata.jsonl'
         bucket = client.get_bucket(config.DOC_SEARCH_BUCKET)
         blob = bucket.blob('metadata.jsonl')
         
@@ -114,5 +113,6 @@ def upload_json() -> None:
 
 
 if __name__ == '__main__':
-    upload('./src/scrape/pdf_files/')
-    upload_json()
+    # Main execution block: Uploads PDF files and their metadata to GCS.
+    upload(pdf_folder='./data/output/pdf_files/', metadata_file_path='./data/output/metadata.json')
+    upload_json(metadata_file_path='./data/output/metadata.json')

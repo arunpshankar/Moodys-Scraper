@@ -53,7 +53,6 @@ async def download_file(session, url, destination, max_retries=10, timeout_durat
     return None
 
 
-
 def sanitize_filename(filename):
     """
     Sanitizes the filename to ensure it's valid.
@@ -65,6 +64,7 @@ def sanitize_filename(filename):
         str: A sanitized version of the filename.
     """
     return "".join([c for c in filename if c.isalpha() or c.isdigit() or c in (' ', '.', '_')]).rstrip()
+
 
 async def download(jsonl_path, output_folder):
     """
@@ -123,3 +123,7 @@ async def download_from_csv(csv_path, output_folder):
         # Execute all download tasks concurrently
         await asyncio.gather(*tasks)
 
+
+if __name__ == '__main__':
+    # Run the main coroutine using an asyncio event loop
+    asyncio.run(download_from_csv(csv_path='./data/output/pdf_urls.csv', output_folder='./data/output/pdf_files'))

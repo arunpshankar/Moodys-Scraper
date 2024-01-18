@@ -6,7 +6,7 @@ import time
 import csv
 
 
-def download_file(url, destination, max_retries=3, timeout_duration=10):
+def download_file(url, destination, max_retries=3, timeout_duration=1):
     """
     Synchronously downloads a file from a given URL and saves it to the specified destination. 
     Implements retry logic with quick retries for certain connection errors.
@@ -41,11 +41,11 @@ def download_file(url, destination, max_retries=3, timeout_duration=10):
         except Exception as e:
             logger.error(type(e).__name__)
 
-
         retries += 1
 
-    print(f"Failed to download {url} after {max_retries} retries.")
+    logger.error(f"Failed to download {url} after {max_retries} retries.")
     return None
+
 
 def sanitize_filename(filename):
     """
@@ -58,6 +58,7 @@ def sanitize_filename(filename):
         str: A sanitized version of the filename.
     """
     return "".join([c for c in filename if c.isalpha() or c.isdigit() or c in (' ', '.', '_')]).rstrip()
+
 
 def download_from_jsonl(jsonl_path, output_folder):
     """
@@ -75,6 +76,7 @@ def download_from_jsonl(jsonl_path, output_folder):
             title = sanitize_filename(item["title"]) + ".pdf"
             destination = output_folder / title
             download_file(item["link"], destination)
+
 
 def download_from_csv(csv_path, output_folder):
     """
@@ -101,3 +103,7 @@ def download_from_csv(csv_path, output_folder):
                 destination = f'{output_path}/{sanitized_filename}'
                 logger.info(f'Downloading PDF from: {url}')
                 download_file(url, destination)
+
+
+if __name__ == '__main__':
+    download_from_csv(csv_path='./data/output/pdf_urls.csv', output_folder='./data/output/pdf_files')

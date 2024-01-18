@@ -57,7 +57,7 @@ class PDFScraper:
                 domain = extract_root_domain(url)
                 if domain == root_domain:
                     non_pdf_urls.add(url)
-        """
+    
         for non_pdf_url in non_pdf_urls:
             urls = self._scrape_urls_from_page_sync(non_pdf_url)
             for url in urls:
@@ -66,7 +66,6 @@ class PDFScraper:
                 elif ".pdf" in url and 'inline' in url:
                     pdf_url = url.split('?')[0]
                     unique_pdf_urls.add(pdf_url)
-        """
 
         return unique_pdf_urls
 
@@ -168,13 +167,14 @@ async def scrape_to_file_async(input_file_path: str, webdriver_path: str, output
             for pdf_url in pdf_urls:
                 resolved_pdf_url = resolve_pdf_url(base_url, pdf_url)
                 output_data.append((bank, base_url, pdf_url, resolved_pdf_url))
-
+    
     await write_output_csv_async(output_file_path, output_data)
+
 
 # Entry point
 if __name__ == '__main__':
     asyncio.run(scrape_to_file_async(
-        input_file_path='./src/scrape/input_urls.csv',
-        webdriver_path='./src/scrape/chromedriver',
-        output_file_path='./src/scrape/pdf_urls.csv'
+        input_file_path='./data/input/seed.csv',
+        webdriver_path='./config/chromedriver',
+        output_file_path='./data/output/pdf_urls.csv'
     ))

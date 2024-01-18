@@ -80,10 +80,6 @@ class PDFScraper:
         root_domain = extract_root_domain(base_url)
 
         for url in urls:
-            if 'api' in url:
-                print('>>>', url)
-
-        for url in urls:
             if url.endswith(".pdf") and not "inline" in url:
                 unique_pdf_urls.add(url)
             elif ".pdf" in url and 'inline' in url:

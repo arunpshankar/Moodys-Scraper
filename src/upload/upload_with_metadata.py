@@ -43,6 +43,7 @@ def upload_to_gcs(client: storage.Client, source_file: Union[str, Path], destina
     except Exception as e:
         logger.error(f"Failed to upload {source_file} to GCS: {e}")
 
+
 def extract_company_name(file_path: Path) -> str:
     """
     Extracts the company name from a given file path, specifically a Path object.

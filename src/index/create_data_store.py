@@ -4,13 +4,9 @@ from typing import Dict, Any
 import requests
 
 
-def create_data_store(display_name: str, data_store_id: str) -> Dict[str, Any]:
+def create_data_store() -> Dict[str, Any]:
     """
     Create a data store in GCP Vertex AI Search.
-
-    Args:
-        display_name (str): The display name for the data store.
-        data_store_id (str): The unique ID for the data store.
 
     Returns:
         Dict[str, Any]: The response from the GCP API.
@@ -18,7 +14,7 @@ def create_data_store(display_name: str, data_store_id: str) -> Dict[str, Any]:
     Raises:
         Exception: If the data store ID or display name already exists.
     """
-    url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{config.PROJECT_ID}/locations/global/collections/default_collection/dataStores?dataStoreId={data_store_id}"
+    url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{config.PROJECT_ID}/locations/global/collections/default_collection/dataStores?dataStoreId={config.DATA_STORE_ID}"
 
     headers = {
         'Authorization': f'Bearer {config.ACCESS_TOKEN}',
@@ -27,7 +23,7 @@ def create_data_store(display_name: str, data_store_id: str) -> Dict[str, Any]:
     }
 
     data = {
-        'displayName': display_name,
+        'displayName': config.DATA_STORE_DISPLAY_NAME,
         'industryVertical': 'GENERIC',
         'solutionTypes': ['SOLUTION_TYPE_SEARCH'],
         'contentConfig': 'CONTENT_REQUIRED',
@@ -53,7 +49,7 @@ def create_data_store(display_name: str, data_store_id: str) -> Dict[str, Any]:
 
 if __name__ == '__main__':
     try:
-        response = create_data_store(display_name='moodys-demo4', data_store_id='moodys-demo4-doc-search')
+        response = create_data_store()
         print(response)
     except Exception as e:
         logger.error(f"An error occurred: {e}")

@@ -32,6 +32,11 @@ class Config:
         self._set_google_credentials(self.CREDENTIALS_PATH)
         self.ACCESS_TOKEN = self._set_access_token()
         self.DOC_SEARCH_BUCKET = self.__config['doc_search_bucket']
+        self.DATA_STORE_ID = self.__config['data_store_id']
+        self.DATA_STORE_DISPLAY_NAME = self.__config['data_store_display_name']
+        self.GCS_INPUT_URI = self.__config['gcs_input_uri']
+        self.GCS_ERRORS_URI = self.__config['gcs_errors_uri']
+
 
     @staticmethod
     def _load_config(config_path: str) -> Dict[str, Any]:

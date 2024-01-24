@@ -3,7 +3,7 @@ from src.config.setup import config
 import requests
 
 
-def import_documents_to_gcp() -> None:
+def ingest_documents() -> None:
     """
     Sends a POST request to GCP to import documents into a specified data store.
 
@@ -20,13 +20,8 @@ def import_documents_to_gcp() -> None:
 
     data = {
         "gcsSource": {
-            "inputUris": [config.GCS_INPUT_URI],
-            "dataSchema": "document",
-        },
-        "reconciliationMode": "INCREMENTAL",
-        "errorConfig": {
-            "gcsPrefix": config.GCS_ERRORS_URI
-        }
+            "inputUris": [config.GCS_INPUT_URI] 
+        }    
     }
 
     try:
@@ -44,8 +39,4 @@ def import_documents_to_gcp() -> None:
 
 # Example Usage
 if __name__ == '__main__':
-
-    try:
-        import_documents_to_gcp()
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
+    ingest_documents()

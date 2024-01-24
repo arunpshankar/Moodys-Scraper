@@ -4,4 +4,4 @@ doc_search_bucket: moodys-doc-search
 data_store_id: moodys-doc-search-11
 data_store_display_name: moodys-doc-search-11
 gcs_input_uri: gs://moodys-doc-search/metadata.jsonl
-gcs_errors_uri: gs://moodys-doc-search-errors
+gcs_errors_uri: gs://moodys-doc-search-errors/

@@ -1,39 +1,31 @@
 from src.config.logging import logger
 from src.config.setup import config
-from typing import Dict, Any
 import requests
 
-def import_documents_to_gcp(data_store_id: str, input_uri: str, errors_uri: str) -> None:
+
+def import_documents_to_gcp() -> None:
     """
     Sends a POST request to GCP to import documents into a specified data store.
-
-    Args:
-        data_store_id (str): The ID of the data store where documents will be imported.
-        input_uri (str): The URI of the input documents in GCS.
-        errors_uri (str): The URI for logging errors during the import process.
 
     Raises:
         Exception: If the request to the GCP API fails.
     """
     # Configuration and Request Setup
-    gcp_access_token = config.get("ACCESS_TOKEN")
-    project_id = config.get("PROJECT_ID")
-
-    url = f"https://discoveryengine.googleapis.com/v1/projects/{project_id}/locations/global/collections/default_collection/dataStores/{data_store_id}/branches/0/documents:import"
+    url = f"https://discoveryengine.googleapis.com/v1/projects/{config.PROJECT_ID}/locations/global/collections/default_collection/dataStores/{config.DATA_STORE_ID}/branches/0/documents:import"
 
     headers = {
-        "Authorization": f"Bearer {gcp_access_token}",
+        "Authorization": f"Bearer {config.ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
 
     data = {
         "gcsSource": {
-            "inputUris": [input_uri],
+            "inputUris": [config.GCS_INPUT_URI],
             "dataSchema": "document",
         },
         "reconciliationMode": "INCREMENTAL",
         "errorConfig": {
-            "gcsPrefix": errors_uri
+            "gcsPrefix": config.GCS_ERRORS_URI
         }
     }
 
@@ -52,11 +44,8 @@ def import_documents_to_gcp(data_store_id: str, input_uri: str, errors_uri: str)
 
 # Example Usage
 if __name__ == '__main__':
-    data_store_id = 'moodys-demo4-doc-search'
-    input_uri = 'gs://moodys-doc-search/metadata.jsonl'
-    errors_uri = 'gs://moodys-doc-search-errors/'
 
     try:
-        import_documents_to_gcp(data_store_id, input_uri, errors_uri)
+        import_documents_to_gcp()
     except Exception as e:
         logger.error(f"An error occurred: {e}")

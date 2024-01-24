@@ -30,6 +30,4 @@ def create_index_for_document_search() -> None:
 
 
 if __name__ == '__main__':
-    logger.info("Script started.")
     create_index_for_document_search()
-    logger.info("Script ended.")

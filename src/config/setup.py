@@ -35,7 +35,6 @@ class Config:
         self.DATA_STORE_ID = self.__config['data_store_id']
         self.DATA_STORE_DISPLAY_NAME = self.__config['data_store_display_name']
         self.GCS_INPUT_URI = self.__config['gcs_input_uri']
-        self.GCS_ERRORS_URI = self.__config['gcs_errors_uri']
 
 
     @staticmethod

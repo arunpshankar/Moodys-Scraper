@@ -18,32 +18,31 @@ def create_doc_search_app() -> Optional[Dict[str, Any]]:
         dict: A dictionary containing the response data from the API if the request is successful.
         None: If the request fails.
     """
-    url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{project_id}/locations/global/collections/default_collection/engines?engineId={data_store_id}"
+    url = f"https://discoveryengine.googleapis.com/v1alpha/projects/{config.PROJECT_ID}/locations/global/collections/default_collection/engines?engineId={config.DATA_STORE_ID}"
 
     # Headers for the request
-    headers: Dict[str, str] = {
+    headers = {
         "Authorization": f"Bearer {config.ACCESS_TOKEN}",
         "Content-Type": "application/json",
         "X-Goog-User-Project": config.PROJECT_ID
     }
 
     # Request payload
-    data: Dict[str, Any] = {
-        "displayName": "DISPLAY_NAME",
+    data = {
+        "displayName": config.DATA_STORE_DISPLAY_NAME,
         "dataStoreIds": [config.DATA_STORE_ID],
-        "solutionType": ["SOLUTION_TYPE_SEARCH"]
+        "solutionType": "SOLUTION_TYPE_SEARCH"
     }
 
     try:
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
-
         logger.info("Document search app created successfully.")
         return response.json()
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to create document search app: {str(e)}")
         return None
-
+    
 
 if __name__ == '__main__':
     result = create_doc_search_app()
